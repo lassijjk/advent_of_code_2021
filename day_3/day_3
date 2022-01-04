@@ -1,0 +1,28 @@
+import numpy as np
+
+lines = np.loadtxt("input.txt", "U")
+
+bits = int(len(lines[0]))
+
+# Viewing data as 1 bit unsigned integers and reshaping it to (1000, 12)
+data = lines.view('U1').astype(int).reshape(lines.shape[0], bits)
+
+# Using left shift for generating array with powers of 2
+pow2 = 1 << np.arange(bits)[::-1]
+print(np.arange(bits)[::-1])
+# Summing ones and zeros of each column to separate arrays
+ones = (data == 1).sum(axis=0)
+zeros = (data == 0).sum(axis=0)
+
+# Task 1 result
+result = pow2.dot(ones > zeros) * pow2.dot(ones < zeros)
+print("Part 1 result:", result)
+
+oxy = co2 = data
+for i in range(bits):
+    oxycol = oxy[:, i]
+    co2col = co2[:, i]
+    oxy = oxy[oxycol == (oxycol.sum()*2 >= oxycol.size)] if len(oxy) > 1 else oxy
+    co2 = co2[co2col == (co2col.sum()*2 < co2col.size)] if len(co2) > 1 else co2
+result = pow2.dot(oxy[0]) * pow2.dot(co2[0])
+print("Part 2 result:", result)
